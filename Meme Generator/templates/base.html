@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <title>Meme Generator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  
+    <style type="text/css">
+      @font-face  {font-family: impact;
+                  src: url(/static/fonts/impact.ttf);}
+
+      body        {padding-top: 10px;
+                  background-color: white;
+                  color: black;}
+
+      nav         {font-family: impact;
+                  font-size: 20px;
+                  color: black;}
+    </style>
+    {% block extrajs %}{% endblock%}
+    <title>{% block title %}{% endblock %} - Code Quality Check</title>
+    {% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="font-size: 30px; color: black;" href="/">Meme Generator</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li id="homeBar" onclick="setActive(this)" class=""><a href="/" style="color: black;">Home</a></li>
+          <li id="generateBar" onclick="setActive(this)" class=""><a href="/create" style="color: black;">Generate</a></li>
+          <li id="meetBar" onclick="setActive(this)" class=""><a href="/meettheteam" style="color: black;">Meet the Team</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <script type="text/javascript">
+      function setActive(element) {
+        $(element).attr.class = "active";
+      }
+    </script>
+  </body>
+</html>

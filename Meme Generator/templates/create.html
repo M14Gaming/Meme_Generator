@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block extrajs %}
+<!-- You should place your js files here -->
+<!-- e.g. <script src="/static/js/index.js"></script> -->
+{% endblock%}
+
+{% block title %}Create{% endblock %}
+
+{% block content %}
+
+<head>
+    <title>Create Your Meme</title>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="/static/js/index.js"></script>	
+    <style> 
+		@font-face 		{font-family: impact;
+						src: url(/static/fonts/impact.ttf);}
+
+		div 			{text-align: center;}
+
+		p 				{font-size: 20px;
+						color: black;
+						margin-left: 25%;
+						margin-right: 25%;}
+
+		h1				{font-size: 100px;
+						font-family: impact;
+						color: white;
+						-webkit-text-stroke: 5px black;
+						text-transform: uppercase;}
+
+		h2				{font-size: 50px;
+						font-family: impact;
+						color: white;
+						-webkit-text-stroke: 2px black;
+						text-transform: uppercase;}		
+
+		body			{background-color: gray;}
+
+		input			{font-family: impact;
+						font-size: 30px;
+						color: black;
+						background-color: white;
+						border: 2px solid black;}		
+
+		.mainImageBox 	{position: relative;
+						height: 500px;
+						width: 500px;
+						margin: auto;
+						border: 5px solid black;
+						padding: 0px;}
+
+		.container 		{margin-left: 32.5%;
+						margin-top: 20px;}
+
+		.col-sm-3		{height: 150px;
+						width: 150px;
+						margin-right: 10px;
+						margin-bottom: 10px;
+						border: 2px solid black;
+						padding: 0px;}
+
+		.buttons		{margin-left: 28.4%;
+						margin-bottom: 10px;}
+
+		.sampleImage	{height: 145px;
+						width: 145px;}
+
+		#topText		{position: absolute;
+						top: 0px;
+						left: 50%;
+						min-width: 450px;
+						transform: translate(-50%,0%);}
+
+		#bottomText		{position: absolute;
+						bottom: 10px;
+						left: 50%;
+						min-width: 450px;
+						transform: translate(-50%,0%);}
+
+		#importButton	{align-self: right;}
+
+		#memeCanvas		{text-align: center;}
+
+	</style>
+</head>
+
+<body>
+	<div class="header">
+		<h1>Create Your Meme!</h1>
+	</div>
+	<div class="instructions">
+		<p> First, choose an image from our selection, or use the Import Image button to use one of your own. Next, click the "TOP TEXT" and "BOTTOM TEXT" areas to edit them to your liking. Finally, click Save Meme to save the finished meme to your device, ready to be shared with anyone you want!</p>
+	</div>
+	<div class="mainImageBox">
+		<div id="mainImageContainer">
+			<img src ="/static/images/blank.png" id="mainImage" height=490px width=490px>
+			<h2 class="memeText" id="topText" contenteditable="true" align="top">TOP TEXT</h2>
+			<h2 class="memeText" id="bottomText" contenteditable="true" align="bottom">BOTTOM TEXT</h2>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-3">
+				<img src={{log_html[0].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+			<div class="col-sm-3">
+				<img src={{log_html[1].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+			<div class="col-sm-3">
+				<img src={{log_html[2].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+			<div class="col-sm-3">
+				<img src={{log_html[3].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-3">
+				<img src={{log_html[4].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+			<div class="col-sm-3">
+				<img src={{log_html[5].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+			<div class="col-sm-3">
+				<img src={{log_html[6].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+			<div class="col-sm-3">
+				<img src={{log_html[7].imagePath}} class="sampleImage" onclick="chooseImage(this)">
+			</div>
+		</div>
+	</div>
+
+	<div class="container buttons">
+		<div class="row">
+			<div class="col-sm-4">
+				<form action="/import_page.php">
+					<input type="button" id="importButton" value="Import Image" onclick="document.getElementById('imgUpload').click();">
+					<input type="file" style="display: none;" id="imgUpload" name="file" accept="image/*" onchange="uploadImage(event)">
+				</form>
+			</div>
+			<div class="col-sm-4">
+				<form action="/save_page.php">
+					<input type="button" id="saveMemeButton" value="Save Meme"; onclick="saveMeme()">
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<canvas id="memeCanvas" style="display: none;" width=470px height=470px></canvas>
+
+	<script type="text/javascript">
+		//Make sample image appear in main image box when clicked
+		function chooseImage(image) {
+			var newImg = $(image).attr('src');
+			$("#mainImage").attr("src", newImg);
+		}
+
+		//Make uploaded image appear in main image box
+		function uploadImage(event) {
+			$("#mainImage").attr("src",URL.createObjectURL(event.target.files[0]));
+		}
+
+
+		//Split string into lines for wrapping in canvas
+		function getLines(context, text, maxWidth) {
+			var words = text.split(" ");
+			var lines = [];
+			var currentLine = words[0];
+
+			for (var i = 1; i < words.length; i++) {
+				var word = words[i];
+				var width = context.measureText(currentLine + " " + word).width;
+				if (width < maxWidth) {
+					currentLine += " " + word;
+				}
+				else {
+					lines.push(currentLine);
+					currentLine = word;
+				}
+			}
+			lines.push(currentLine);
+			return lines;
+		}
+
+		//Download meme image and text
+		function saveMeme() {
+			//Use canvas element to draw image and text, easier than trying to download a div
+			var canvas = document.getElementById("memeCanvas");
+			var canvasContext = canvas.getContext("2d");
+			canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+			//Draw image to canvas
+			var img = document.getElementById("mainImage");
+			canvasContext.drawImage(img,10,10,470,470);
+
+			canvasContext.font = "50px impact";
+
+			//Remove whitespace characters
+			var topTextRaw = document.getElementById("topText").innerHTML.replace(/(<br ?\/?>)*/g,"").toUpperCase();
+			var bottomTextRaw = document.getElementById("bottomText").innerHTML.replace(/(<br ?\/?>)*/g,"").toUpperCase();
+
+			//Split text into lines
+			var topTextFinal = getLines(canvasContext, topTextRaw, 450);
+			var bottomTextFinal = getLines(canvasContext, bottomTextRaw, 450);
+
+			canvasContext.textAlign = "center";
+			canvasContext.fillStyle = "white";
+
+			canvasContext.strokeStyle = "black";
+			canvasContext.lineWidth = 2;
+
+			var topStartPos = 50;
+			for (var i = 0; i < topTextFinal.length; i++) {
+				canvasContext.fillText(topTextFinal[i],240,topStartPos);
+				canvasContext.strokeText(topTextFinal[i],240,topStartPos);
+				topStartPos += 50;
+			}
+
+			var bottomStartPos = 460;
+			for (var i = bottomTextFinal.length-1; i >= 0; i--) {
+				canvasContext.fillText(bottomTextFinal[i],240,bottomStartPos);
+				canvasContext.strokeText(bottomTextFinal[i],240,bottomStartPos);
+				bottomStartPos -= 50;
+			}
+
+			let downloadLink = document.createElement('a');
+			downloadLink.setAttribute('download', 'meme.png');
+			let dataURL = canvas.toDataURL('image/png');
+			let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
+			downloadLink.setAttribute('href', url);
+			downloadLink.click();
+		}
+	</script>
+</body>
+{% endblock %}
