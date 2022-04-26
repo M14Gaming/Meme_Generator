@@ -1,4 +1,7 @@
-Example 36: This project shows how to avoid repeat the same code when you have a nevigation bar for multiple pages.
+## Team
+### Malcolm Flaherty
+Email: FlahertyM18@students.ecu.edu
+
 
 ## Quick Start
 ### Local Test Setup
